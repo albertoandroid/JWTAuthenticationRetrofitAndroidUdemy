@@ -1,5 +1,6 @@
 package com.androiddesdecero.jwtudemy;
 
+import android.os.CancellationSignal;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,6 +49,43 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 obtenerRecursoConToken();
+            }
+        });
+
+        btSolicitudTokenErroneo = findViewById(R.id.btSolicitudTokenErroneo);
+        btSolicitudTokenErroneo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                obtenerRecursoConTokenErroneo();
+            }
+        });
+
+
+    }
+
+    private void obtenerRecursoConTokenErroneo(){
+        token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGJlcnRvIiwidXNlcklkIjoiMiIsInJvbGUiOiJBZG1pbiJ9.A6_dKk_GcyzsYIiHzzo8Q7nqeFePjera56KUoFVbNK4";
+        String authHeader = "Bearer " + token;
+        Call<List<String>> call = WebServiceJWT
+                .getInstance()
+                .createService(WebServiceApi.class)
+                .obtenerMovimientosBancarios(authHeader);
+
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.code()==200){
+                    for(int i=0; i<response.body().size(); i++){
+                        Log.d("TAG1", "Movimiento Bancario: " + i + " " + response.body().get(i));
+                    }
+                }else{
+                    Log.d("TAG1", "Token es incorrecto y no podemos obtener la respuesta");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+
             }
         });
     }
